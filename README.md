@@ -38,7 +38,7 @@ Your task is to design an intelligent agent based on the Bayes filter algorithm 
 
 You may use the following command line to start a game where the sole eadible `scared` ghost wanders around the maze while Pacman, controlled by the `humanagent`, tries to locate him with a (very) rusty sensor:
 ```bash
-python run.py --agentfile humanagent.py --bsagent beliefstateagent.py --ghostagent scared --nghosts 1 --seed -1 --layout large_filter
+python run.py --agentfile humanagent.py --bsagentfile beliefstateagent.py --ghostagent scared --nghosts 1 --seed -1 --layout large_filter
 ```
 Change the value of `seed` - for random number generator - to a positive value to ease reproducibility of your experiments.
 
@@ -67,6 +67,7 @@ You are asked to answer the following questions:
 	- 3.e. - **2 points** - Discuss the effect of the sensor variance (as set through the `--sensorvariance` command line argument) on Pacman's belief state.
 	- 3.f. - **2 points** - How would you implement a Pacman controller to eat ghosts using only its current position, the set of legal actions and its current belief state?
 	- 3.g. - **BONUS 3 points** - Implement this controller in the `pacmanagent.py` file.
+		 - :warning: If you need to use the state, please make a deepcopy of it first in the `get_action` function.
 
 
 ---
