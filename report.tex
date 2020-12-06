@@ -29,8 +29,33 @@
 \section{Bayes filter}
 
 \begin{enumerate}[label=\alph*.,leftmargin=*]
-    \item
-    \item
+    \item The observable evidence variables at time \textit{t} are defined in
+    this way for the ghost \textit{i} : \\
+    
+    $noisyDistance(i) = 
+    manhattanDistance(ghost(i), Pacman) + Binom(n, p) - n * p$ \\
+
+    where \textit{noisyDistance(i)} corresponds to the observable evidence variable 
+    which is tracking the ghost \textit{i} at time \textit{t}, \textit{manhattanDistance(ghost(i), Pacman)}
+    corresponds to the Manhattan distance between the ghost \textit{i} and Pacman at time \textit{t},
+    \textit{Binom(n, p)} corresponds to a random variate following a binomial distribution with the given parameters
+    \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\frac{sensor\_var}{p \ (1 - p)} = \frac{sensor\_var}{\frac{1}{4}}$ with \textit{sensor\_var} being the variance of the rusty sensor.
+    
+    \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken and $g$ being the type of ghost (confused, afraid, scared), is, in general, $P_a(X_t | X_{t-1}, g) = \alpha * \gamma$. In detail :
+    \[
+  P_a(X_t | X_{t-1}, g)=\begin{cases}
+               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ if g} = \text{confused} \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 2 \text{ if g} = \text{afraid and }d(X_t, P) \geq d(X_{t-1},P) \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 8 \text{ if g} = \text{scared and }d(X_t, P) \geq d(X_{t-1},P) \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ else}
+            \end{cases}
+\]
+where:
+\begin{itemize}
+	\item $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
+	\item $\alpha = \frac{1}{\sum_{i=1}^N {\gamma_i}}$ with $N$ being the number of legal actions.
+\end{itemize}
+
 \end{enumerate}
 
 \section{Implementation}
