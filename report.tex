@@ -29,8 +29,33 @@
 \section{Bayes filter}
 
 \begin{enumerate}[label=\alph*.,leftmargin=*]
-    \item
-    \item
+    \item The observable evidence variables at time \textit{t} are defined in
+    this way for the ghost \textit{i} : \\
+    
+    $noisyDistance(i) = 
+    manhattanDistance(ghost(i), Pacman) + Binom(n, p) - n * p$ \\
+
+    where \textit{noisyDistance(i)} corresponds to the observable evidence variable 
+    which is tracking the ghost \textit{i} at time \textit{t}, \textit{manhattanDistance(ghost(i), Pacman)}
+    corresponds to the Manhattan distance between the ghost \textit{i} and Pacman at time \textit{t},
+    \textit{Binom(n, p)} corresponds to a random variate following a binomial distribution with the given parameters
+    \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\frac{sensor\_var}{p \ (1 - p)} = \frac{sensor\_var}{\frac{1}{4}}$ with \textit{sensor\_var} being the variance of the rusty sensor.
+    
+    \item The transition model $P(X_t | X_{t - 1}, ghostType)$ given all the legal actions at state $X_{t - 1}$ and ghostType $\in$ \{confused, afraid, scared\} corresponding to the ghost type can be defined as :\\
+    
+    $
+    P(X_t | X_{t - 1}, ghostType) = 
+    \begin{cases}
+        P(X_t | X_{t-1}, ghostType) =  \frac{1}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{confused} \\
+        P(X_t | X_{t-1}, ghostType) = \frac{2}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{afraid and} \\ manhattanDist(Pacman, X_t) \geq  manhattanDist(Pacman, X_{t-1}) \\
+        P(X_t | X_{t-1}, ghostType) = \frac{8}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{scared and} \\ dist(Pacman, X_t) \geq manhattanDist(Pacman, X_{t-1}) \\
+        P(X_t | X_{t-1}, ghostType) = \frac{1}{\#legalActions(X_{t-1})} \text{ else}
+    \end{cases}
+    $\\
+
+    where ${\#legalActions(X_{t-1})}$ corresponds to the number of different legal actions for the state $X_{t-1}$ and $manhattanDist(Pacman, s)$ 
+    corresponds to the Manhattan distance between Pacman and the ghost in state \textit{s}. Note that if the probability is $>$ 1, it should be reduced to 1.
+
 \end{enumerate}
 
 \section{Implementation}
