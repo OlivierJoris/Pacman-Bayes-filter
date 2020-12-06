@@ -2,8 +2,9 @@
 
 from pacman_module.game import Agent
 import numpy as np
-from pacman_module import util
+from pacman_module import ghostAgents, util
 from scipy.stats import binom
+import math
 
 
 class BeliefStateAgent(Agent):
@@ -30,6 +31,70 @@ class BeliefStateAgent(Agent):
 
         self.p = 0.5
         self.n = int(self.sensor_variance/(self.p*(1-self.p)))
+    
+    def ghostTransition(self, mazeWidth, mazeHeight, currentPos, previousPos, pacman_position):
+      """
+        Returns the probability for a ghost to go from previousPos to currentPos.
+        Arguments:
+        ----------
+        - `mazeWidth`: the width of the maze
+        - `mazeHeight`: the height of the maze
+        - `currentPos`: 2D coordinates position
+          of a ghost at state x_{t}
+          where 't' is the current time step.
+        - - `previousPos`: 2D coordinates possible position
+          of a ghost at state x_{t - 1}
+          where 't' is the current time step
+        - `pacman_position`: 2D coordinates position
+          of pacman at state x_{t}
+          where 't' is the current time step
+
+        Return:
+        -------
+        - The probability for a ghost to go from previousPos to currentPos
+        """
+
+       # Go through a wall is not a legal action
+      if self.walls[currentPos[0]][currentPos[1]] or self.walls[previousPos[0]][previousPos[1]]:
+        return 0
+      
+      # Stay on the same cell is not a legal action
+      if currentPos == previousPos:
+        return 0
+      
+      # The ghost can only go to vertical and horizontal neighbor cells
+      if (previousPos[0] - 1 == currentPos[0] and previousPos[1] + 1 == currentPos[1]) or \
+         (previousPos[0] - 1 == currentPos[0] and previousPos[1] - 1 == currentPos[1]) or \
+         (previousPos[0] + 1 == currentPos[0] and previousPos[1] + 1 == currentPos[1]) or \
+         (previousPos[0] + 1 == currentPos[0] and previousPos[1] - 1 == currentPos[1]):
+        return 0
+
+      nbLegalActions = 0
+
+      # Check if it is not a wall on the cell he can go
+      if not self.walls[previousPos[0] + 1][previousPos[1]] and previousPos[0] + 1 < mazeWidth:
+        nbLegalActions += 1
+      
+      if not self.walls[previousPos[0] - 1][previousPos[1]] and previousPos[0] - 1 > 0:
+        nbLegalActions += 1
+
+      if not self.walls[previousPos[0]][previousPos[1] + 1] and previousPos[1] + 1 < mazeHeight:
+        nbLegalActions += 1
+      
+      if not self.walls[previousPos[0]][previousPos[1] - 1] and previousPos[1] - 1 > 0:
+        nbLegalActions += 1
+      
+      gamma = 1
+
+      if util.manhattanDistance(currentPos, pacman_position) >= util.manhattanDistance(previousPos, pacman_position):
+        if self.ghost_type == "afraid":
+          gamma = 2
+        elif self.ghost_type == "scared":
+          gamma = 8
+      
+      transitionProba = gamma / (gamma * nbLegalActions)
+
+      return transitionProba
 
     def update_belief_state(self, evidences, pacman_position, ghosts_eaten):
         """
@@ -61,6 +126,54 @@ class BeliefStateAgent(Agent):
 
         # XXX: Your code here
 
+        sensorStandardDeviation = math.sqrt(self.sensor_variance)
+
+        ghostNumber, N, M = beliefStates.shape
+
+        for ghost in range(ghostNumber):
+          if not ghosts_eaten[ghost]:
+
+            #Initialize the belief states
+            for x in range(N):
+             for y in range(M):
+              beliefStates[ghost][x][y] = 1 / (N * M)
+
+            sensorDistance = evidences[ghost]
+
+            distanceRange = [sensorDistance - sensorStandardDeviation, sensorDistance + sensorStandardDeviation]
+
+            normalizationFactor = 0
+
+            for x in range(N):
+              for y in range(M):
+                distanceToPacman = math.sqrt((x - pacman_position[0]) ** 2 + (y - pacman_position[1]) ** 2)
+                
+                # Distance too small or too high seeing the one of the rusty sensor 
+                if distanceToPacman < distanceRange[0] or distanceToPacman > distanceRange[1]:
+                  beliefStates[ghost][x][y] = 0
+                
+                else:
+                  totalProba = 0
+
+                  for possiblePreviousX in range(x - 1, x + 2):
+                    for possiblePreviousY in range(y - 1, y + 2):
+                      # Check if we are not exiting the maze by exploring the neighbor cells
+                      if possiblePreviousX not in range(N) or possiblePreviousY not in range(M):
+                        continue
+                      else:
+                        totalProba += self.beliefGhostStates[ghost][possiblePreviousX][possiblePreviousY] * \
+                        self.ghostTransition(N, M, [x, y], [possiblePreviousX, possiblePreviousY], pacman_position)
+
+                  
+                  beliefStates[ghost][x][y] *= totalProba
+
+                normalizationFactor += beliefStates[ghost][x][y]
+
+            for x in range(N):
+              for y in range(M):
+                if normalizationFactor != 0:
+                  beliefStates[ghost][x][y] /= normalizationFactor
+
         # XXX: End of your code
 
         self.beliefGhostStates = beliefStates
@@ -70,7 +183,7 @@ class BeliefStateAgent(Agent):
     def _get_evidence(self, state):
         """
         Computes noisy distances between pacman and ghosts.
-
+<
         Arguments:
         ----------
         - `state`: The current game state s_t
