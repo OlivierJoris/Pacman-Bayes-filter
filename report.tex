@@ -41,20 +41,20 @@
     \textit{Binom(n, p)} corresponds to a random variate following a binomial distribution with the given parameters
     \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\frac{sensor\_var}{p \ (1 - p)} = \frac{sensor\_var}{\frac{1}{4}}$ with \textit{sensor\_var} being the variance of the rusty sensor.
     
-    \item The transition model $P(X_t | X_{t - 1}, ghostType)$ given all the legal actions at state $X_{t - 1}$ and ghostType $\in$ \{confused, afraid, scared\} corresponding to the ghost type can be defined as :\\
-    
-    $
-    P(X_t | X_{t - 1}, ghostType) = 
-    \begin{cases}
-        P(X_t | X_{t-1}, ghostType) =  \frac{1}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{confused} \\
-        P(X_t | X_{t-1}, ghostType) = \frac{2}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{afraid and} \\ manhattanDist(Pacman, X_t) \geq  manhattanDist(Pacman, X_{t-1}) \\
-        P(X_t | X_{t-1}, ghostType) = \frac{8}{\#legalActions(X_{t-1})} \text{ if ghostType} = \text{scared and} \\ dist(Pacman, X_t) \geq manhattanDist(Pacman, X_{t-1}) \\
-        P(X_t | X_{t-1}, ghostType) = \frac{1}{\#legalActions(X_{t-1})} \text{ else}
-    \end{cases}
-    $\\
-
-    where ${\#legalActions(X_{t-1})}$ corresponds to the number of different legal actions for the state $X_{t-1}$ and $manhattanDist(Pacman, s)$ 
-    corresponds to the Manhattan distance between Pacman and the ghost in state \textit{s}. Note that if the probability is $>$ 1, it should be reduced to 1.
+    \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken and $g$ being the type of ghost (confused, afraid, scared), is, in general, $P_a(X_t | X_{t-1}, g) = \alpha * \gamma$. In detail :
+    \[
+  P_a(X_t | X_{t-1}, g)=\begin{cases}
+               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ if g} = \text{confused} \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 2 \text{ if g} = \text{afraid and }d(X_t, P) \geq d(X_{t-1},P) \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 8 \text{ if g} = \text{scared and }d(X_t, P) \geq d(X_{t-1},P) \\
+               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ else}
+            \end{cases}
+\]
+where:
+\begin{itemize}
+	\item $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
+	\item $\alpha = \frac{1}{\sum_{i=1}^N {\gamma_i}}$ with $N$ being the number of legal actions.
+\end{itemize}
 
 \end{enumerate}
 
