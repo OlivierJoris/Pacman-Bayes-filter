@@ -31,7 +31,7 @@ class BeliefStateAgent(Agent):
 
         self.p = 0.5
         self.n = int(self.sensor_variance/(self.p*(1-self.p)))
-    
+
     def ghostTransition(self, mazeWidth, mazeHeight, currentPos, previousPos, pacman_position):
       """
         Returns the probability for a ghost to go from previousPos to currentPos.
@@ -42,7 +42,7 @@ class BeliefStateAgent(Agent):
         - `currentPos`: 2D coordinates position
           of a ghost at state x_{t}
           where 't' is the current time step.
-        - - `previousPos`: 2D coordinates possible position
+        - `previousPos`: 2D coordinates possible position
           of a ghost at state x_{t - 1}
           where 't' is the current time step
         - `pacman_position`: 2D coordinates position
@@ -57,11 +57,11 @@ class BeliefStateAgent(Agent):
        # Go through a wall is not a legal action
       if self.walls[currentPos[0]][currentPos[1]] or self.walls[previousPos[0]][previousPos[1]]:
         return 0
-      
+
       # Stay on the same cell is not a legal action
       if currentPos == previousPos:
         return 0
-      
+
       # The ghost can only go to vertical and horizontal neighbor cells
       if (previousPos[0] - 1 == currentPos[0] and previousPos[1] + 1 == currentPos[1]) or \
          (previousPos[0] - 1 == currentPos[0] and previousPos[1] - 1 == currentPos[1]) or \
@@ -74,16 +74,16 @@ class BeliefStateAgent(Agent):
       # Check if it is not a wall on the cell he can go
       if not self.walls[previousPos[0] + 1][previousPos[1]] and previousPos[0] + 1 < mazeWidth:
         nbLegalActions += 1
-      
+
       if not self.walls[previousPos[0] - 1][previousPos[1]] and previousPos[0] - 1 > 0:
         nbLegalActions += 1
 
       if not self.walls[previousPos[0]][previousPos[1] + 1] and previousPos[1] + 1 < mazeHeight:
         nbLegalActions += 1
-      
+
       if not self.walls[previousPos[0]][previousPos[1] - 1] and previousPos[1] - 1 > 0:
         nbLegalActions += 1
-      
+
       gamma = 1
 
       if util.manhattanDistance(currentPos, pacman_position) >= util.manhattanDistance(previousPos, pacman_position):
@@ -91,7 +91,7 @@ class BeliefStateAgent(Agent):
           gamma = 2
         elif self.ghost_type == "scared":
           gamma = 8
-      
+
       transitionProba = gamma / (gamma * nbLegalActions)
 
       return transitionProba
@@ -147,11 +147,11 @@ class BeliefStateAgent(Agent):
             for x in range(N):
               for y in range(M):
                 distanceToPacman = math.sqrt((x - pacman_position[0]) ** 2 + (y - pacman_position[1]) ** 2)
-                
+
                 # Distance too small or too high seeing the one of the rusty sensor 
                 if distanceToPacman < distanceRange[0] or distanceToPacman > distanceRange[1]:
                   beliefStates[ghost][x][y] = 0
-                
+
                 else:
                   totalProba = 0
 
@@ -164,7 +164,7 @@ class BeliefStateAgent(Agent):
                         totalProba += self.beliefGhostStates[ghost][possiblePreviousX][possiblePreviousY] * \
                         self.ghostTransition(N, M, [x, y], [possiblePreviousX, possiblePreviousY], pacman_position)
 
-                  
+
                   beliefStates[ghost][x][y] *= totalProba
 
                 normalizationFactor += beliefStates[ghost][x][y]
@@ -183,7 +183,7 @@ class BeliefStateAgent(Agent):
     def _get_evidence(self, state):
         """
         Computes noisy distances between pacman and ghosts.
-<
+
         Arguments:
         ----------
         - `state`: The current game state s_t
