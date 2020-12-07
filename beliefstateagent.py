@@ -239,8 +239,34 @@ class BeliefStateAgent(Agent):
            of the maze layout and Z is the number of ghosts.
         N.B. : [0,0] is the bottom left corner of the maze
         """
-        pass
 
+        realValue = belief_states[0].copy()
+        diff = belief_states[0].copy()
+
+        ghostNumber, N, M = belief_states.shape
+
+        f = open("diff_result_walls_scared.txt", "w")
+
+        mean = [0 for i in range(1000)]
+
+        for i in range(1000):
+            for x in range(N):
+                for y in range(M):
+                    if x == state.getGhostPosition(1)[0] and y == state.getGhostPosition(1)[1]:
+                        realValue[x][y] = 1
+                    else:
+                        realValue[x][y] = 0
+
+                    diff[x][y] = abs(realValue[x][y] - belief_states[0][x][y])
+        
+                    mean[i] += diff[x][y]
+            
+            mean[i] /= (N * M)
+
+            f.write(str(mean[i]) + "\n")
+                
+        f.close()
+                
     def get_action(self, state):
         """
         Given a pacman game state, returns a belief state.
