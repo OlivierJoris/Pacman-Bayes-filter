@@ -5,7 +5,7 @@ from pacman_module.game import Agent
 import numpy as np
 from pacman_module import ghostAgents, util
 from scipy.stats import binom
-import math
+from scipy.stats import entropy
 
 
 class BeliefStateAgent(Agent):
@@ -32,6 +32,8 @@ class BeliefStateAgent(Agent):
 
         self.p = 0.5
         self.n = int(self.sensor_variance/(self.p*(1-self.p)))
+
+        self.count = 0
 
     def ghostTransition(
         self, mazeWidth, mazeHeight, currentPos, previousPos, pacman_position
@@ -240,33 +242,32 @@ class BeliefStateAgent(Agent):
         N.B. : [0,0] is the bottom left corner of the maze
         """
 
-        realValue = belief_states[0].copy()
-        diff = belief_states[0].copy()
+        # ghostNumber, N, M = belief_states.shape
 
-        ghostNumber, N, M = belief_states.shape
+        # difference = 0
 
-        f = open("diff_result_walls_scared.txt", "w")
+        # distribution = []
 
-        mean = [0 for i in range(1000)]
+        # f = open(str(self.ghost_type) + "_" + str(self.args.layout) + "_" + "pacman_belief_state_summary" + ".txt", "a+")
 
-        for i in range(1000):
-            for x in range(N):
-                for y in range(M):
-                    if x == state.getGhostPosition(1)[0] and y == state.getGhostPosition(1)[1]:
-                        realValue[x][y] = 1
-                    else:
-                        realValue[x][y] = 0
+        # g = open(str(self.ghost_type) + "_" + str(self.args.layout) + "_" + "difference_with_real_value" + ".txt", "a+")
 
-                    diff[x][y] = abs(realValue[x][y] - belief_states[0][x][y])
-        
-                    mean[i] += diff[x][y]
-            
-            mean[i] /= (N * M)
+        # for x in range(N):
+        #     for y in range(M):
+        #             distribution.append(belief_states[0][x][y])
+        #             difference += (util.manhattanDistance([x,y], state.getGhostPosition(1)) * belief_states[0][x][y])
+                   
 
-            f.write(str(mean[i]) + "\n")
-                
-        f.close()
-                
+        # if self.count == 100:
+        #      f.write(str(entropy(distribution, base=2)) + "\n")
+        #      g.write(str(difference) + "\n")
+
+        #      f.close()
+        #      g.close()
+        #      exit()
+
+        # self.count += 1
+               
     def get_action(self, state):
         """
         Given a pacman game state, returns a belief state.

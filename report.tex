@@ -14,13 +14,17 @@
 \usepackage{hyperref}
 \usepackage[margin=2.5cm]{geometry}
 
+\usepackage{float}
+
+\newcommand\round[1]{\left[#1\right]}
+
 \begin{document}
 
 % ==============================================================================
 
 \title{\Large{INFO8006: Project 3 - Report}}
 \vspace{1cm}
-\author{\small{\bf Mr Pacman - s111111} \\ \small{\bf Miss Pacman - s222222}}
+\author{\small{\bf Maxime Goffart - s180521} \\ \small{\bf Olivier Joris - s182113}}
 
 \maketitle
 
@@ -32,14 +36,14 @@
     \item The observable evidence variables at time \textit{t} are defined in
     this way for the ghost \textit{i} : \\
     
-    $noisyDistance(i) = 
-    manhattanDistance(ghost(i), Pacman) + Binom(n, p) - n * p$ \\
+    $NoisyDistance(i) = 
+    ManhattanDistance(ghost(i), Pacman) + Binom(n, p) - n * p$ \\
 
-    where \textit{noisyDistance(i)} corresponds to the observable evidence variable 
-    which is tracking the ghost \textit{i} at time \textit{t}, \textit{manhattanDistance(ghost(i), Pacman)}
+    where \textit{NoisyDistance(i)} corresponds to the observable evidence variable 
+    which is tracking the ghost \textit{i} at time \textit{t}, \textit{ManhattanDistance(ghost(i), Pacman)}
     corresponds to the Manhattan distance between the ghost \textit{i} and Pacman at time \textit{t},
-    \textit{Binom(n, p)} corresponds to a random variate following a binomial distribution with the given parameters
-    \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\frac{sensor\_var}{p \ (1 - p)} = \frac{sensor\_var}{\frac{1}{4}}$ with \textit{sensor\_var} being the variance of the rusty sensor.
+    \textit{Binom(n, p)} corresponds to a random variable following a binomial distribution with the given parameters
+    \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\round{\frac{sensor\_var}{p \ (1 - p)}} = \round{4 * sensor\_var}$ with \textit{sensor\_var} being the variance of the rusty sensor.
     
     \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken and $g$ being the type of ghost (confused, afraid, scared), is, in general, $P_a(X_t | X_{t-1}, g) = \alpha * \gamma$. In detail :
     \[
@@ -67,13 +71,42 @@ where:
 \section{Experiment}
 
 \begin{enumerate}[label=\alph*.,leftmargin=*]
-    \item 
-    \item The quality of the belief state can be computed by evaluating the difference of probabilies between the real state of the game and the computed belief state.
-    The closer this difference is to 0, the better.
-    \item
-    \item
-    \item
-    \item
+    \item The entropy of the probability distribution of the Pacman belief state is a measure which can summarizes this belief state. 
+    The lower the computed entropy is, the better the belief state of Pacman is concentrated cells of the maze. We chose to compute this entropy using the base 2 and using the \texttt{entropy} function from the \texttt{scipy.stats} library.
+    \item To measure the quality of the belief state we chose to take the sum of the Manhattan distances between each cell and the real position of the ghost weight by the corresponding probability of the Pacman belief state :\\
+    
+    $Quality = {\sum_{x, y} {PacmanBeliefState(x, y) * ManhattanDistance((x, y), \ GhostPosition)}}$\\
+
+    where \textit{PacmanBeliefState(x, y)} corresponds to the probability link to the Pacman belief state about the cell with coordinates \textit{(x, y)} in the maze and \textit{ManhattanDistance((x,y), GhostPosition)} corresponds
+    to the Manhattan distance between the cell with coordinates \textit{(x, y)} in the maze and the position of the ghost (in the real state of the game). The lower is this quality mesurement, the closer the Pacman belief state is from the real state of the game.
+    \item We did our measures on the two provided layouts using a mean of 10 differents run of our filter with differents seed to ease reproductibility of our experiments. These measures have been taken after 100 iterations to be sure that they have converged.
+    These measures can be observed on the Figure 1 and 2. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{plots/pacman_belief_state.png} 
+    \caption{Mean entropy of Pacman belief state over 10 different runs.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{plots/difference.png} 
+    \caption{Mean quality of the Pacman belief state over 10 different runs.}
+\end{figure}
+    
+    \item We can see using our measures and the model itself that the values of the Pacman belief state are more precise with the scared and afraid than with the confused ghost. It is because these ghosts have a higher probability to escape from Pacman than to approach it. Thus, they are reaching a corner of the maze and the measures are more precise : the entropy is lower.
+    Moreover, we can see that for the same reasons, the quality of the Pacman belief state is better with the afraid and scared ghosts than with the confused one. It can seem intuitive that with a more precise belief state (lower entropy), the belief state of Pacman is of better quality. In the \texttt{large\_filter} layout the Pacman belief state has a better entropy and quality than in the \texttt{large\_filter\_walls} in general because the ghost has a higher probability to go in a corner : they are less walls.
+    \item Reducing the variance of the sensor will reduce the noise in the distance between the ghosts and Pacman obtained from the sensor. This can be verified in a more mathematical way. We know that the noise is given by: $$\text{noise} = Binom(n, p) - n * p$$
+    where $n = \frac{\text{sensor\_variance}}{p^2}$ and $p = 0.5$. Thus, increasing the sensor\_variance will lead to bigger values for the noise. While reducing the sensor\_variance will lead to smaller values for the noise. The entropy of Pacman belief state will so be lower with a low sensor\_variance.
+    
+    \item For each remaining ghost, we could only consider the cell which has the highest probability\footnote{If there are multiple cells that have the same highest probability of containing the ghost, we keep the one which is the closest to Pacman.} of containing the ghost. Based on these cells, we choose the legal action that lead Pacman to the closest cell of this set. This will force Pacman to kill all the ghosts in a minimal number of moves which will increase the score of Pacman at the end of the game.
+    \item \textbf{\textit{Leave empty.}}
+\end{enumerate}
+
+% ==============================================================================
+
+\end{document}
+
     \item \textbf{\textit{Leave empty.}}
 \end{enumerate}
 
