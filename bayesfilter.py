@@ -5,7 +5,7 @@ from pacman_module.game import Agent
 import numpy as np
 from pacman_module import ghostAgents, util
 from scipy.stats import binom
-import math
+from scipy.stats import entropy
 
 
 class BeliefStateAgent(Agent):
@@ -32,6 +32,8 @@ class BeliefStateAgent(Agent):
 
         self.p = 0.5
         self.n = int(self.sensor_variance/(self.p*(1-self.p)))
+
+        self.count = 0
 
     def ghostTransition(
         self, mazeWidth, mazeHeight, currentPos, previousPos, pacman_position
@@ -184,9 +186,11 @@ class BeliefStateAgent(Agent):
                                         )
 
                                         beliefStatesUpdate[ghost][x][y] += (currValue * update)
-
+                                        
+                            # Update from the sensor
                             beliefStatesUpdate[ghost][x][y] *= distancesRange[currentDistance]
 
+                # Normalization
                 beliefStatesUpdate[ghost] /= beliefStatesUpdate[ghost].sum()
 
         beliefStates = beliefStatesUpdate.copy()
@@ -240,7 +244,7 @@ class BeliefStateAgent(Agent):
         N.B. : [0,0] is the bottom left corner of the maze
         """
         pass
-
+               
     def get_action(self, state):
         """
         Given a pacman game state, returns a belief state.
