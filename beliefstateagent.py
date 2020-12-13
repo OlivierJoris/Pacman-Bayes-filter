@@ -186,9 +186,9 @@ class BeliefStateAgent(Agent):
                                         )
 
                                         beliefStatesUpdate[ghost][x][y] += (currValue * update)
-
+                            # Update from the sensor
                             beliefStatesUpdate[ghost][x][y] *= distancesRange[currentDistance]
-
+                # Normalization
                 beliefStatesUpdate[ghost] /= beliefStatesUpdate[ghost].sum()
 
         beliefStates = beliefStatesUpdate.copy()
@@ -241,7 +241,7 @@ class BeliefStateAgent(Agent):
            of the maze layout and Z is the number of ghosts.
         N.B. : [0,0] is the bottom left corner of the maze
         """
-
+        pass
         # ghostNumber, N, M = belief_states.shape
 
         # difference = 0
