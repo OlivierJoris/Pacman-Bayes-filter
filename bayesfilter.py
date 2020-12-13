@@ -41,6 +41,7 @@ class BeliefStateAgent(Agent):
         """
         Returns the probability for a ghost to go from previousPos
         to currentPos.
+
         Arguments:
         ----------
         - `mazeWidth`: the width of the maze
@@ -54,6 +55,7 @@ class BeliefStateAgent(Agent):
         - `pacman_position`: 2D coordinates position
           of pacman at state x_{t}
           where 't' is the current time step
+
         Return:
         -------
         - The probability for a ghost to go from previousPos to currentPos
@@ -114,6 +116,7 @@ class BeliefStateAgent(Agent):
         """
         Given a list of (noised) distances from pacman to ghosts,
         returns a list of belief states about ghosts positions
+
         Arguments:
         ----------
         - `evidences`: list of distances between
@@ -124,6 +127,7 @@ class BeliefStateAgent(Agent):
           where 't' is the current time step
         - `ghosts_eaten`: list of booleans indicating
           whether ghosts have been eaten or not
+
         Return:
         -------
         - A list of Z belief states at state x_{t}
@@ -142,7 +146,7 @@ class BeliefStateAgent(Agent):
         beliefStatesUpdate = beliefStates.copy()
 
         for ghost in range(ghostNumber):
-             
+
             for x in range(N):
                 for y in range(M):
                     beliefStatesUpdate[ghost][x][y] = 0
@@ -152,14 +156,18 @@ class BeliefStateAgent(Agent):
                 sensorDistance = evidences[ghost]
 
                 distancesRange = {}
-                
+
                 for i in range(self.n + 1):
-                    distancesRange[i + sensorDistance - self.n * self.p] = binom.pmf(i, self.n, self.p)
+                    distancesRange[i + sensorDistance - self.n * self.p] =\
+                        binom.pmf(i, self.n, self.p)
 
                 for x in range(N):
                     for y in range(M):
-                        currentDistance = util.manhattanDistance((x, y), pacman_position)
-                       
+                        currentDistance = util.manhattanDistance(
+                            (x, y),
+                            pacman_position
+                        )
+
                         if currentDistance in distancesRange:
 
                             for possiblePreviousX in range(x - 1, x + 2):
@@ -185,11 +193,11 @@ class BeliefStateAgent(Agent):
                                             pacman_position
                                         )
 
-                                        beliefStatesUpdate[ghost][x][y] += (currValue * update)
-                                        
+                                        beliefStatesUpdate[ghost][x][y] +=\
+                                            (currValue * update)
                             # Update from the sensor
-                            beliefStatesUpdate[ghost][x][y] *= distancesRange[currentDistance]
-
+                            beliefStatesUpdate[ghost][x][y] *=\
+                                distancesRange[currentDistance]
                 # Normalization
                 beliefStatesUpdate[ghost] /= beliefStatesUpdate[ghost].sum()
 
@@ -209,6 +217,7 @@ class BeliefStateAgent(Agent):
         - `state`: The current game state s_t
                    where 't' is the current time step.
                    See FAQ and class `pacman.GameState`.
+
         Return:
         -------
         - A list of Z noised distances in real numbers
@@ -232,6 +241,7 @@ class BeliefStateAgent(Agent):
         Use this function to record your metrics
         related to true and belief states.
         Won't be part of specification grading.
+
         Arguments:
         ----------
         - `state`: The current game state s_t
@@ -244,14 +254,54 @@ class BeliefStateAgent(Agent):
         N.B. : [0,0] is the bottom left corner of the maze
         """
         pass
-               
+        """ ghostNumber, N, M = belief_states.shape
+
+        difference = 0
+
+        distribution = []
+
+        f = open(
+            str(self.ghost_type) +
+            "_" + str(self.args.layout) +
+            "_" + "pacman_belief_state_summary" +
+            ".txt", "a+"
+        )
+
+        g = open(
+            str(self.ghost_type) + "_" +
+            str(self.args.layout) + "_" +
+            "difference_with_real_value" +
+            ".txt", "a+"
+        )
+
+        for x in range(N):
+            for y in range(M):
+                distribution.append(belief_states[0][x][y])
+                distance = util.manhattanDistance(
+                    [x, y],
+                    state.getGhostPosition(1)
+                )
+                difference += (distance * belief_states[0][x][y])
+
+        if self.count == 100:
+            f.write(str(entropy(distribution, base=2)) + "\n")
+            g.write(str(difference) + "\n")
+
+            f.close()
+            g.close()
+            exit()
+
+        self.count += 1 """
+
     def get_action(self, state):
         """
         Given a pacman game state, returns a belief state.
+
         Arguments:
         ----------
         - `state`: the current game state.
                    See FAQ and class `pacman.GameState`.
+
         Return:
         -------
         - A belief state.
