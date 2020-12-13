@@ -50,7 +50,7 @@
     
     \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken in the state $X_{t-1}$ and $g$ being the type of ghost $\in$ \{confused, afraid, scared\} is :
     \[
-  P_a(X_t | X_{t-1}, g) = \frac{\alpha(X_t, X_{t-1}, g)}{{\sum_{a} {\alpha(X_t, X_{t-1}, g)}}}
+  P_a(X_t | X_{t-1}, g) = \frac{\alpha(X_t, X_{t-1}, g)}{{\sum_{a} {\alpha(X_{t-1_a}, X_{t-1}, g)}}}
 \]
 
 \[
@@ -61,7 +61,11 @@
         \text{1} \ \text{else}
   \end{cases}
 \]
-where $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
+where :
+\begin{itemize}
+    \item $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
+    \item $X_{t-1_a}$ is the state reached from the state $X_{t-1}$ by performing the action $a$.
+\end{itemize}
 	
 
 \end{enumerate}
@@ -103,8 +107,8 @@ where $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time
     \caption{Mean quality of Pacman's belief state over 10 different runs.}
 \end{figure}
     
-    \item We can see, by using our measures and the model itself, that the values of Pacman's belief state are more concentrated in the maze with the scared than with the afraid which gives itself more concentrated than with the confused ghost. It is because the scared ghost has a higher probability than the afraid ghost which has itself a higher probability than the confused ghost to escape from Pacman than to approach it. Thus, they are reaching a corner of the maze and the probabilities representing Pacman's belief state are more concentrated in the maze : the entropy is lower.
-    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid ghost than with the scared ghost which is itself of better quality than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a lower entropy and quality than in the \texttt{large\_filter\_walls} because the ghost has a lower probability to go in a corner of the maze : they are more walls which are decreasing the Pacman's belief state entropy and so improving its quality.
+    \item We can see, by using our measures and the model itself, that the values of Pacman's belief state are more concentrated in the maze with the scared than with the afraid which gives itself more concentrated values than with the confused ghost. It is because the probability to escape from Pacman is higher with the scared ghost than with the afraid ghost which has itself a higher probability than the confused one. Thus, they are reaching a corner of the maze and the probabilities representing Pacman's belief state are more concentrated in the maze : the entropy is lower.
+    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid ghost than with the scared ghost which is itself of better quality than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a greater entropy and quality than in the \texttt{large\_filter\_walls} because, in this first layout, they are less walls than in the second layout. Indeed, walls are decreasing the Pacman's belief state entropy and so improving its quality.
     \item Reducing the variance of the sensor will reduce the noise in the distances between the ghosts and Pacman obtained from the sensor. This can be verified in a more mathematical way. We know that the noise is given by: $$\text{noise} = Binom(n, p) - n * p$$
     where $n = \frac{\text{sensor\_variance}}{p^2}$ and $p = 0.5$. Thus, increasing the sensor\_variance will lead to bigger values for the noise. While reducing the sensor\_variance will lead to smaller values for the noise. So, the entropy of Pacman's belief state will be lower with a low sensor\_variance and of better quality.
     
