@@ -44,24 +44,25 @@
     	\item \textit{NoisyDistance(i)} corresponds to the observable evidence variable 
     which is tracking the ghost \textit{i} at time \textit{t}.
     	\item \textit{ManhattanDistance(ghost(i), Pacman)} corresponds to the Manhattan distance between the ghost \textit{i} and Pacman at time \textit{t}.
-    	\item \textit{Binom(n, p)} corresponds to a random variable following a binomial distribution with the given parameters
+    	\item \textit{Binom(n,p)} corresponds to a random variable following a binomial distribution with the given parameters
     \textit{n} and \textit{p}, \textit{p} = $\frac{1}{2}$, and n = $\round{\frac{sensor\_var}{p \ (1 - p)}} = \round{4 * sensor\_var}$ with \textit{sensor\_var} being the variance of the rusty sensor.
     \end{itemize}
     
-    \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken and $g$ being the type of ghost (confused, afraid, scared), is, in general, $P_a(X_t | X_{t-1}, g) = \alpha * \gamma$. In detail :
+    \item The transition model $P_a(X_t | X_{t-1}, g)$, with $a$ being a legal action taken in the state $X_{t-1}$ and $g$ being the type of ghost $\in$ \{confused, afraid, scared\} is :
     \[
-  P_a(X_t | X_{t-1}, g)=\begin{cases}
-               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ if g} = \text{confused} \\
-               P_a(X_t | X_{t-1}, g) = \alpha * 2 \text{ if g} = \text{afraid and }d(X_t, P) \geq d(X_{t-1},P) \\
-               P_a(X_t | X_{t-1}, g) = \alpha * 8 \text{ if g} = \text{scared and }d(X_t, P) \geq d(X_{t-1},P) \\
-               P_a(X_t | X_{t-1}, g) = \alpha * 1 \text{ else}
-            \end{cases}
+  P_a(X_t | X_{t-1}, g) = \frac{\alpha(X_t, X_{t-1}, g)}{{\sum_{a} {\alpha(X_t, X_{t-1}, g)}}}
 \]
-where:
-\begin{itemize}
-	\item $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
-	\item $\alpha = \frac{1}{\sum_{i=1}^N {\gamma_i}}$ with $N$ being the number of legal actions.
-\end{itemize}
+
+\[
+\text{with} \ \ \ \ \ \ \ \ \ \ \ \ \ \alpha(X_t, X_{t-1}, g) = 
+  \begin{cases}
+        \text{8} \ \text{if} \ \text{g} \ = \ \text{scared} \ \text{and} \ d(X_t, P)  \geq  d(X_{t-1}, P)\\
+        \text{2} \ \text{if} \ \text{g} \ = \ \text{afraid} \ \text{and} \ d(X_t, P)  \geq  d(X_{t-1}, P)\\
+        \text{1} \ \text{else}
+  \end{cases}
+\]
+where $d(X_t, P)$ is the Manhattan distance between Pacman and the ghost at time t.
+	
 
 \end{enumerate}
 
@@ -102,12 +103,12 @@ where:
     \caption{Mean quality of Pacman's belief state over 10 different runs.}
 \end{figure}
     
-    \item We can see, by using our measures and the model itself, that the values of Pacman's belief state are more concentrated in the maze with the scared and afraid ghosts than with the confused ghost. It is because these ghosts have a higher probability to escape from Pacman than to approach it. Thus, they are reaching a corner of the maze and the measures are more concentrated in the maze : the entropy is lower.
-    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid and scared ghosts than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a better entropy and quality than in the \texttt{large\_filter\_walls} because the ghost has a higher probability to go in a corner of the maze : they are less walls preventing it to reach a corner.
+    \item We can see, by using our measures and the model itself, that the values of Pacman's belief state are more concentrated in the maze with the scared than with the afraid which gives itself more concentrated than with the confused ghost. It is because the scared ghost has a higher probability than the afraid ghost which has itself a higher probability than the confused ghost to escape from Pacman than to approach it. Thus, they are reaching a corner of the maze and the probabilities representing Pacman's belief state are more concentrated in the maze : the entropy is lower.
+    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid ghost than with the scared ghost which is itself of better quality than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a lower entropy and quality than in the \texttt{large\_filter\_walls} because the ghost has a lower probability to go in a corner of the maze : they are more walls which are decreasing the Pacman's belief state entropy and so improving its quality.
     \item Reducing the variance of the sensor will reduce the noise in the distances between the ghosts and Pacman obtained from the sensor. This can be verified in a more mathematical way. We know that the noise is given by: $$\text{noise} = Binom(n, p) - n * p$$
     where $n = \frac{\text{sensor\_variance}}{p^2}$ and $p = 0.5$. Thus, increasing the sensor\_variance will lead to bigger values for the noise. While reducing the sensor\_variance will lead to smaller values for the noise. So, the entropy of Pacman's belief state will be lower with a low sensor\_variance and of better quality.
     
-    \item For each remaining ghost, we could only consider the cell which has the highest probability\footnote{If there are multiple cells that have the same highest probability of containing the ghost, we keep the one which is the closest to Pacman.} of containing the ghost. Then, we compute the least cost path between Pacman and this cell, we play the first move of this path, and repeat this process at each iteration. Note that when we start to chase one ghost, we will keep chasing it until we ate it in order to save time. This will force Pacman to kill all the ghosts in a minimal number of moves which will increase the score of Pacman at the end of the game.
+    \item For each remaining ghost, we could only consider the cell which has the highest probability\footnote{If there are multiple cells that have the same highest probability of containing the ghost, we keep the one which is the closest to Pacman.} of containing the ghost. Then, we compute the least cost path between Pacman and this cell recursively starting from this cell, we play the first move of this path, and repeat this process at each iteration. Note that when we start to chase one ghost, we will keep chasing it until we ate it in order to save time. This will force Pacman to kill all the ghosts in a minimal number of moves which will increase the score of Pacman at the end of the game.
     \item \textbf{\textit{Leave empty.}}
 \end{enumerate}
 

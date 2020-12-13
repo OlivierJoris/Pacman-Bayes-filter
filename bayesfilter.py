@@ -33,9 +33,31 @@ class BeliefStateAgent(Agent):
         self.p = 0.5
         self.n = int(self.sensor_variance/(self.p*(1-self.p)))
 
+        # Used for metrics
         self.count = 0
 
     def getCoefficient(self, prevPos, possibleCurrentPos, pacman_position):
+        """
+        Returns the coefficient associated to the move leading from
+        prevPos to possibleCurrentPos.
+
+        Arguments:
+        ----------
+        - `possibleCurrentPos`: 2D coordinates of a possible position
+          of a ghost at state x_{t}
+          where 't' is the current time step.
+        - `prevPos`: 2D coordinates position
+          of a ghost at state x_{t - 1}
+          where 't' is the current time step
+        - `pacman_position`: 2D coordinates position
+          of pacman at state x_{t}
+          where 't' is the current time step
+
+        Return:
+        -------
+        - The coefficient associated to the move the coefficient associated
+        to the move leading from prevPos to possibleCurrentPos.
+        """
         coeff = 1
 
         currDistance = util.manhattanDistance(possibleCurrentPos,
