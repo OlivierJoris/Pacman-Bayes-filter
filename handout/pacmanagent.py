@@ -117,7 +117,6 @@ class PacmanAgent(Agent):
         bestCost = float('+inf')
 
         for nextState, action in stateCopy.generatePacmanSuccessors():
-            pacmanNextPosition = nextState.getPacmanPosition()
             pacmanNextX = nextState.getPacmanPosition()[0]
             pacmanNextY = nextState.getPacmanPosition()[1]
             if self.mazeCost[pacmanNextX][pacmanNextY] < bestCost:

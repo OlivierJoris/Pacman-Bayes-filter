@@ -4,7 +4,7 @@ scared <- c(1.1547196316061477, 3.06720814248804)
 
 colors <- c("blue", "green", "blue", "green", "blue", "green")
 
-barplot(cbind(confused, afraid, scared), beside = TRUE, names.arg = c("confused", "afraid", "scared"), col = colors, ylim = c(0,5), main = "Mean entropy of Pacman belief state", ylab = "Mean entropy")
+barplot(cbind(confused, afraid, scared), beside = TRUE, names.arg = c("confused", "afraid", "scared"), col = colors, ylim = c(0,5), main = "Mean entropy of Pacman's belief state", ylab = "Mean entropy")
 legend("topright", legend = c("large_filter layout", "large_filter_walls layout"), col=c("blue", "green"), pch = c(15,15))
 
 arrows(x0=1.5, y0= 3.3815262204238214 - 1.091022535004305, x1=1.5, y1= 3.3815262204238214 + 1.091022535004305, code=3, angle=90, length=0.2, col="black", lwd=2)

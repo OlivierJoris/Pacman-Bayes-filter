@@ -4,7 +4,7 @@ scared <- c(0.6923256853908628, 2.3392476965292524)
 
 colors <- c("blue", "green", "blue", "green", "blue", "green")
 
-barplot(cbind(confused, afraid, scared), beside = TRUE, names.arg = c("confused", "afraid", "scared"), col = colors, ylim = c(0,7), main = "Mean quality of the Pacman belief state", ylab = "Mean quality")
+barplot(cbind(confused, afraid, scared), beside = TRUE, names.arg = c("confused", "afraid", "scared"), col = colors, ylim = c(0,7), main = "Mean quality of Pacman's belief state", ylab = "Mean quality")
 legend("topright", legend = c("large_filter layout", "large_filter_walls layout"), col=c("blue", "green"), pch = c(15,15))
 
 arrows(x0=1.5, y0= 4.571555420127652 - 1.8975720253437058, x1=1.5, y1= 4.571555420127652 + 1.8975720253437058, code=3, angle=90, length=0.2, col="black", lwd=2)
