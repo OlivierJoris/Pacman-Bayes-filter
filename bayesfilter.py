@@ -55,8 +55,8 @@ class BeliefStateAgent(Agent):
 
         Return:
         -------
-        - The coefficient associated to the move the coefficient associated
-        to the move leading from prevPos to possibleCurrentPos.
+        - The coefficient associated to the move leading
+        from prevPos to possibleCurrentPos.
         """
         coeff = 1
 
@@ -169,6 +169,7 @@ class BeliefStateAgent(Agent):
           as N*M numpy mass probability matrices
           where N and M are respectively width and height
           of the maze layout and Z is the number of ghosts.
+
         N.B. : [0,0] is the bottom left corner of the maze.
                Matrices filled with zeros must be returned for eaten ghosts.
         """
@@ -257,6 +258,8 @@ class BeliefStateAgent(Agent):
         -------
         - A list of Z noised distances in real numbers
           where Z is the number of ghosts.
+
+
         XXX: DO NOT MODIFY THIS FUNCTION !!!
         Doing so will result in a 0 grade.
         """
@@ -286,6 +289,7 @@ class BeliefStateAgent(Agent):
            N*M numpy matrices of probabilities
            where N and M are respectively width and height
            of the maze layout and Z is the number of ghosts.
+
         N.B. : [0,0] is the bottom left corner of the maze
         """
         pass

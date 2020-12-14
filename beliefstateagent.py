@@ -54,8 +54,8 @@ class BeliefStateAgent(Agent):
 
         Return:
         -------
-        - The coefficient associated to the move the coefficient associated 
-        to the move leading from prevPos to possibleCurrentPos.
+        - The coefficient associated to the move
+        leading from prevPos to possibleCurrentPos.
         """
         coeff = 1
 
