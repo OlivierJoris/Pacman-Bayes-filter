@@ -82,7 +82,7 @@ where :
     \item The entropy of the probability distribution of Pacman's belief state is a measure which can summarize this belief state. 
     The lower the computed entropy is, the better the belief state of Pacman is concentrated in cells of the maze. We chose to compute this entropy using logarithmic base 2 and using the \texttt{entropy} function from the \texttt{scipy.stats} library.
     
-    \item To measure the quality of the belief state, we chose to take the sum of the Manhattan distances between each cell and the real position of the ghost weighted by the corresponding probability of the Pacman belief state :\\
+    \item To measure the quality of the belief state, we chose to take the sum of the Manhattan distances between each cell and the real position of the ghost weighted by the corresponding probability of Pacman's belief state :\\
     
     $Quality = {\sum_{x, y} {PacmanBeliefState(x, y) * ManhattanDistance((x, y), \ GhostPosition)}}$\\
 
@@ -108,7 +108,8 @@ where :
 \end{figure}
     
     \item We can see, by using our measures and the model itself, that the values of Pacman's belief state are more concentrated in the maze with the scared than with the afraid which gives itself more concentrated values than with the confused ghost. It is because the probability to escape from Pacman is higher with the scared ghost than with the afraid ghost which has itself a higher probability than the confused one. Thus, they are reaching a corner of the maze and the probabilities representing Pacman's belief state are more concentrated in the maze : the entropy is lower.
-    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid ghost than with the scared ghost which is itself of better quality than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a greater entropy and quality than in the \texttt{large\_filter\_walls} because, in this first layout, they are less walls than in the second layout. Indeed, walls are decreasing the Pacman's belief state entropy and so improving its quality.
+    Moreover, we can see that, for the same reasons, the quality of Pacman's belief state is better with the afraid ghost than with the scared ghost which is itself of better quality than with the confused one. It can seem intuitive that with a more concentrated belief state (lower entropy), the belief state of Pacman is of better quality. In general, in the \texttt{large\_filter} layout, Pacman's belief state has a greater entropy and quality than in the \texttt{large\_filter\_walls} because, in this first layout, they are less walls than in the second layout. Indeed, walls are decreasing the entropy of Pacman's belief state and so improving its quality.
+    
     \item Reducing the variance of the sensor will reduce the noise in the distances between the ghosts and Pacman obtained from the sensor. This can be verified in a more mathematical way. We know that the noise is given by: $$\text{noise} = Binom(n, p) - n * p$$
     where $n = \frac{\text{sensor\_variance}}{p^2}$ and $p = 0.5$. Thus, increasing the sensor\_variance will lead to bigger values for the noise. While reducing the sensor\_variance will lead to smaller values for the noise. So, the entropy of Pacman's belief state will be lower with a low sensor\_variance and of better quality.
     
