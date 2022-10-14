@@ -1,5 +1,7 @@
 
-# Project III
+# Pacman Bayes filter
+
+Bayes filter used in the Pacman game to locate ghosts in Python. This project has been realized as part of the *Introduction to artificial intelligence* course given by Gilles Louppe at the University of Liège during the 2020-2021 academic year.
 
 ## Table of contents
 
